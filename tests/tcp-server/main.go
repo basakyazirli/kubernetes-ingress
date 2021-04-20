@@ -9,20 +9,21 @@ import (
 
 func main() {
 	port := flag.String("port", "3333", "Port")
-	host := flag.String("host", "127.0.0.1", "Host or IP")
+	//host := flag.String("host", "0.0.0.0", "Host or IP")
 	response := flag.String("response", "", "Optional response value")
 	flag.Parse()
 
-	if *response == "" {
-		*response = fmt.Sprintf("%v:%v", *host, *port)
-	}
+	//if *response == "" {
+	host := GetOutboundIP()
+	*response = fmt.Sprintf("%v:%v", host, *port)
+	//}
 
-	l, err := net.Listen("tcp", fmt.Sprintf("%v:%v", *host, *port))
+	l, err := net.Listen("tcp", fmt.Sprintf(":%v", *port))
 	if err != nil {
 		log.Panicln(err)
 	}
 	defer l.Close()
-	log.Printf("listening to tcp connections at: %v:%v\n", *host, *port)
+	log.Printf("listening to tcp connections at: :%v\n", *port)
 	log.Printf("responding with: %v\n", *response)
 
 	for {
@@ -45,4 +46,18 @@ func handleRequest(conn net.Conn, response string) {
 		log.Printf("error writing to connection: %v", err)
 		return
 	}
+}
+
+// https://stackoverflow.com/questions/23558425/how-do-i-get-the-local-ip-address-in-go
+// Get preferred outbound ip of this machine
+func GetOutboundIP() net.IP {
+	conn, err := net.Dial("udp", "8.8.8.8:80")
+	if err != nil {
+		log.Fatal(err)
+	}
+	defer conn.Close()
+
+	localAddr := conn.LocalAddr().(*net.UDPAddr)
+
+	return localAddr.IP
 }

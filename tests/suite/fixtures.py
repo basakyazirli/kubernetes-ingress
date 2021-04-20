@@ -743,21 +743,23 @@ class TransportServerSetup:
         namespace (str):
     """
 
-    def __init__(self, name, namespace, ingress_name, ingress_pod_name, ic_namespace):
+    def __init__(self, name, namespace, ingress_name, ingress_pod_name, ic_namespace, public_endpoint: PublicEndpoint):
         self.name = name
         self.namespace = namespace
         self.ingress_name = ingress_name
         self.ingress_pod_name = ingress_pod_name
         self.ic_namespace = ic_namespace
+        self.public_endpoint = public_endpoint
 
 
 @pytest.fixture(scope="class")
 def transport_server_setup(
-        request, kube_apis, ingress_controller_prerequisites, test_namespace
+        request, kube_apis, ingress_controller_prerequisites, test_namespace, ingress_controller_endpoint
 ) -> TransportServerSetup:
     """
     Prepare Transport Server Example.
 
+    :param ingress_controller_endpoint:
     :param ingress_controller_prerequisites:
     :param request: internal pytest fixture to parametrize this method
     :param kube_apis: client apis
@@ -794,7 +796,7 @@ def transport_server_setup(
     ic_pod_name = get_first_pod_name(kube_apis.v1, ingress_controller_prerequisites.namespace)
     ic_namespace = ingress_controller_prerequisites.namespace
 
-    return TransportServerSetup(ts_resource['metadata']['name'], test_namespace, ingress_name, ic_pod_name, ic_namespace)
+    return TransportServerSetup(ts_resource['metadata']['name'], test_namespace, ingress_name, ic_pod_name, ic_namespace, ingress_controller_endpoint)
 
 
 @pytest.fixture(scope="class")
