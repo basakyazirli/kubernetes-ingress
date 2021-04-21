@@ -774,9 +774,9 @@ def transport_server_setup(
     global_config_file = f"{TEST_DATA}/{request.param['example']}/standard/global-configuration.yaml"
     gc_resource = create_gc_from_yaml(kube_apis.custom_objects, global_config_file, "nginx-ingress")
 
-    # deploy dns
-    dns_file = f"{TEST_DATA}/{request.param['example']}/standard/dns.yaml"
-    create_items_from_yaml(kube_apis, dns_file, test_namespace)
+    # deploy service_file
+    service_file = f"{TEST_DATA}/{request.param['example']}/standard/service.yaml"
+    create_items_from_yaml(kube_apis, service_file, test_namespace)
 
     # deploy transport server
     transport_server_file = f"{TEST_DATA}/{request.param['example']}/standard/transport-server.yaml"
@@ -787,7 +787,7 @@ def transport_server_setup(
     def fin():
         print("Clean up TransportServer Example:")
         delete_ts(kube_apis.custom_objects, ts_resource, test_namespace)
-        delete_items_from_yaml(kube_apis, dns_file, test_namespace)
+        delete_items_from_yaml(kube_apis, service_file, test_namespace)
         delete_gc(kube_apis.custom_objects, gc_resource, "nginx-ingress")
 
     request.addfinalizer(fin)

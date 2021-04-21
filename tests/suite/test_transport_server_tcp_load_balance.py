@@ -85,24 +85,9 @@ class TestTransportServerTcpLoadBalance:
         """
         The load balancing of TCP should result in 3 servers to match the 3 replicas of a service.
         """
-        # file = f"{TEST_DATA}/tcp/tcp-server.yaml"
-        # create_items_from_yaml(kube_apis, file, transport_server_setup.namespace)
-
-        # wait_before_test(5)
-
-        # ts_file = f"{TEST_DATA}/transport-server-tcp-load-balance/standard/transport-server.yaml"
-        # patch_ts(kube_apis.custom_objects, transport_server_setup.name, ts_file, transport_server_setup.namespace)
-        #
-        wait_before_test()
 
         req_url = f"{transport_server_setup.public_endpoint.public_ip}:{transport_server_setup.public_endpoint.port}"
         print(req_url)
-        #
-        #
-        # resp_1 = requests.get(f"{req_url}")
-        #
-        # print(resp_1)
-        #
 
         result_conf = get_ingress_nginx_template_ts_conf(
             kube_apis.v1,
@@ -113,10 +98,7 @@ class TestTransportServerTcpLoadBalance:
         )
         print(result_conf)
 
-        time.sleep(120)
-
         host = transport_server_setup.public_endpoint.public_ip
-        # host = "172.17.0.4"
         port = transport_server_setup.public_endpoint.port
 
         client = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -125,6 +107,8 @@ class TestTransportServerTcpLoadBalance:
 
         print('response: ')
         print(response.decode())
+
+        time.sleep(30)
 
         self.restore_transport_server(kube_apis, transport_server_setup)
 

@@ -8,7 +8,7 @@ spec:
     protocol: TCP
   upstreams:
     - name: tcp-app
-      service: tcp-server
+      service: tcp-service
       port: 3333
   action:
     pass: tcp-app
